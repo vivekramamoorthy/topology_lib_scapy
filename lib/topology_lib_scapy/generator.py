@@ -107,7 +107,7 @@ def createcdmline(packet, packet_struct, packet_list, options):
         cmdline = packet[:-1] + ")"
         return cmdline
     else:
-        cmdline = packet[:-1] + " " + options + ")"
+        cmdline = packet[:-1] + ", " + options + ")"
         return cmdline
 
 

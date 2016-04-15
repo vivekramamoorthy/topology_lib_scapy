@@ -31,8 +31,6 @@ from __future__ import print_function, division
 from .generator import createcdmline, protocol
 import re
 
-# Add your library functions here.
-
 
 def start_scapy(enode):
     """
@@ -295,7 +293,7 @@ def sendpfast(enode, packet_struct, packet_list, options=None):
     """
     Send packets at layer 2 fast
 
-      : param type str
+    : param type str
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]
@@ -312,12 +310,29 @@ def sendpfast(enode, packet_struct, packet_list, options=None):
     return enode(scapycmd, shell='bash')
 
 
-# Sniff packets - 10 packets by default
-def sniff(enode, options="count=10"):
+# Sniff packets - timeout is 8 seconds by default.
+def sniff(enode, options="timeout=8"):
     """
-    Needs implementation.
+    Sniff command for host node. By default a timeout of 8 seconds
+    has been set.
+    Always include a timeout value < 9 seconds when specifying other options.
+
+    : param type str
+        options: optional parameters for the command, eg: "timeout=8"
+
+    Usage:
+
+        ::
+            result =\
+                <node>.libs.scapy.sniff("prn=None, lfilter=None, count=0,\
+                 store=1, offline=None, L2socket=None,timeout=8")
+
+            result = <node>.libs.scapy.sniff()
     """
-    pass
+
+    scapycmd = "sniff(" + options + ")"
+    enode(scapycmd, shell='bash')
+    return show(enode)
 
 
 # Send and receive packets at layer 3
@@ -327,7 +342,7 @@ def sr(enode, packet_struct, packet_list, options="timeout=8"):
     Returns a string of received packets. Parser is yet to be implemented.
     By default, this returns a _.show() for the result.
 
-      : param type str
+    : param type str
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]
@@ -352,7 +367,7 @@ def sr1(enode, packet_struct, packet_list, options="timeout=8"):
     Returns a string of received packet. Parser is yet to be implemented.
     By default, this returns a _.show() for the result.
 
-      : param type str
+    : param type str
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]
@@ -378,7 +393,7 @@ def srp(enode, packet_struct, packet_list, options="timeout=8"):
     Returns a string of received packets. Parser is yet to be implemented.
     By default, this returns a _.show() for the result.
 
-      : param type str
+    : param type str
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]

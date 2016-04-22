@@ -35,9 +35,11 @@ import re
 def start_scapy(enode):
     """
     This method must be called before trying to send any scapy packets.
+
     Usage:
 
         ::
+
             <host node>.libs.scapy.start_scapy()
 
     """
@@ -60,9 +62,11 @@ def exit_scapy(enode):
     """
     This method must be called after scapy commands are done. Not doing so
     may not allow for any bash commads to be sent for the host node.
+
     Usage:
 
         ::
+
             <host node>.libs.scapy.exit_scapy()
 
     """
@@ -89,6 +93,7 @@ def ip(enode, key_val=None):
     Usage:
 
         ::
+
             ip_packet = <host node>.libs.scapy.ip() or
             ip_packet = <host node>.libs.scapy.ip("dst='10.10.7.102',\
                                                     src='10.10.7.101'")
@@ -113,6 +118,7 @@ def ether(enode, key_val=None):
     Usage:
 
         ::
+
             ether_packet = <host node>.libs.scapy.ether() or
             ether_packet = <host node>.libs.scapy.ether("type=0x9000")
 
@@ -136,6 +142,7 @@ def tcp(enode, key_val=None):
     Usage:
 
         ::
+
             tcp_packet = <host node>.libs.scapy.tcp() or
             tcp_packet = <host node>.libs.scapy.tcp("dport=179") or
             tcp_packet = <host node>.libs.scapy.tcp("dport=[179,100,(1,5)]")
@@ -160,6 +167,7 @@ def arp(enode, key_val=None):
     Usage:
 
         ::
+
             arp_packet = <host node>.libs.scapy.arp() or
             arp_packet = <host node>.libs.scapy.arp("<key>=<value>")
 
@@ -184,6 +192,7 @@ def icmp(enode, key_val=None):
     Usage:
 
         ::
+
             icmp_packet = <host node>.libs.scapy.icmp() or
             icmp_packet = <host node>.libs.scapy.icmp("<key>=<value>")
 
@@ -207,6 +216,7 @@ def dot1q(enode, key_val=None):
     Usage:
 
         ::
+
             dot1q_packet = <host node>.libs.scapy.dot1q() or
             dot1q_packet = <host node>.libs.scapy.dot1q("<key>=<value>")
 
@@ -230,6 +240,7 @@ def udp(enode, key_val=None):
     Usage:
 
         ::
+
             udp_packet = <host node>.libs.scapy.udp() or
             udp_packet = <host node>.libs.scapy.udp("<key>=<value>")
 
@@ -256,6 +267,7 @@ def send(enode, packet_struct, packet_list, options=None):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.send('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.send('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
@@ -279,6 +291,7 @@ def sendp(enode, packet_struct, packet_list, options=None):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.sendp('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.sendp('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
@@ -301,6 +314,7 @@ def sendpfast(enode, packet_struct, packet_list, options=None):
     Usage:
 
         ::
+
             result =\
                 <node>.libs.scapy.sendpfast('Eth/IP/TCP', [ether, ip, tcp])
 
@@ -311,18 +325,19 @@ def sendpfast(enode, packet_struct, packet_list, options=None):
 
 
 # Sniff packets - timeout is 8 seconds by default.
-def sniff(enode, options="timeout=8"):
+def sniff(enode, options="timeout=5"):
     """
-    Sniff command for host node. By default a timeout of 8 seconds
+    Sniff command for host node. By default a timeout of 5 seconds
     has been set.
     Always include a timeout value < 9 seconds when specifying other options.
 
     : param type str
-        options: optional parameters for the command, eg: "timeout=8"
+        options: optional parameters for the command, eg: "timeout=5"
 
     Usage:
 
         ::
+
             result =\
                 <node>.libs.scapy.sniff("prn=None, lfilter=None, count=0,\
                  store=1, offline=None, L2socket=None,timeout=8")
@@ -336,7 +351,7 @@ def sniff(enode, options="timeout=8"):
 
 
 # Send and receive packets at layer 3
-def sr(enode, packet_struct, packet_list, options="timeout=8"):
+def sr(enode, packet_struct, packet_list, options="timeout=5"):
     """
     Send and recieve packets at layer 3
     Returns a string of received packets. Parser is yet to be implemented.
@@ -350,6 +365,7 @@ def sr(enode, packet_struct, packet_list, options="timeout=8"):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.sr('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.sr('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
@@ -361,7 +377,7 @@ def sr(enode, packet_struct, packet_list, options="timeout=8"):
 
 
 # Send packets at layer 3 and return only the first answer
-def sr1(enode, packet_struct, packet_list, options="timeout=8"):
+def sr1(enode, packet_struct, packet_list, options="timeout=5"):
     """
     Send packets at layer 3 and return only the first answer
     Returns a string of received packet. Parser is yet to be implemented.
@@ -375,6 +391,7 @@ def sr1(enode, packet_struct, packet_list, options="timeout=8"):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.sr('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.sr('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
@@ -387,7 +404,7 @@ def sr1(enode, packet_struct, packet_list, options="timeout=8"):
 
 
 # Send and receive packets at layer 2
-def srp(enode, packet_struct, packet_list, options="timeout=8"):
+def srp(enode, packet_struct, packet_list, options="timeout=5"):
     """
     Send and recieve packets at layer 2
     Returns a string of received packets. Parser is yet to be implemented.
@@ -401,6 +418,7 @@ def srp(enode, packet_struct, packet_list, options="timeout=8"):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.srp('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.srp('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
@@ -412,7 +430,7 @@ def srp(enode, packet_struct, packet_list, options="timeout=8"):
 
 
 # Send and receive packets at layer 2 and return only the first answer
-def srp1(enode, packet_struct, packet_list, options="timeout=8"):
+def srp1(enode, packet_struct, packet_list, options="timeout=5"):
     """
     Send packets at layer 2 and return only the first answer
     Returns a string of received packet. Parser is yet to be implemented.
@@ -426,6 +444,7 @@ def srp1(enode, packet_struct, packet_list, options="timeout=8"):
     Usage:
 
         ::
+
             result =\
             <node>.libs.scapy.srp1('Eth/IP/TCP', [ether, ip, tcp]) or
             <node>.libs.scapy.srp1('Eth/IP/TCP', [ether, ip, tcp], "iface=2")

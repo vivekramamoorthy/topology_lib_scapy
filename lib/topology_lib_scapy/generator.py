@@ -100,7 +100,7 @@ def createcdmline(packet, packet_struct, packet_list, options):
         # Match DOT1Q packet
         elif re.match(r'\s*dot1q', pkt_type, re.IGNORECASE):
             packet = packet + "Dot1Q("
-            packet = get_pkt_optns(r'\s*dot1q\w*', packet, packet_list)
+            packet = get_pkt_optns(r'\s*802.1Q\w*', packet, packet_list)
 
     # If options are provided, include them.
     if options is None:

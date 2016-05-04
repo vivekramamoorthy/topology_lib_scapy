@@ -98,13 +98,20 @@ def test_scapy(topology, step):
     ip_packet = scp1.libs.scapy.ip("dst='10.10.7.102', src='10.10.7.101'")
     icmp_packet = scp1.libs.scapy.icmp()
     arp_packet = scp1.libs.scapy.arp("pdst='10.10.7.101'")
-    # ether = scp1.libs.scapy.ether("dst='00:50:56:96:fa:f3'")
+    ether_packet = scp1.libs.scapy.ether()
+    dot1qpack = scp1.libs.scapy.dot1q()
+
+    dot1qpack['vlan'] = 10
+    dot1qpack['prio'] = 1
+
+    ether_packet['dst'] = '00:50:56:96:fa:f3'
 
     step('Send the packet')
     output = scp1.libs.scapy.sr1('IP/ICMP', [ip_packet, icmp_packet])
     output1 = scp1.libs.scapy.summary()
     output2 = scp2.libs.scapy.sr1('ARP', [arp_packet])
     output = scp1.libs.scapy.sr1('IP/ICMP', [ip_packet, icmp_packet])
+    output3 = scp1.libs.scapy.sendp('Eth/Dot1Q', [ether_packet, dot1qpack])
 
     step('Exit Scapy')
     scp1.libs.scapy.exit_scapy()
@@ -116,6 +123,7 @@ def test_scapy(topology, step):
     step('Just printing out the results.summary() for now.')
     print(output1)
     print(output2)
+    print(output3)
 
     step('Send ping again')
     ping = scp1.libs.ping.ping(5, '10.10.7.1')

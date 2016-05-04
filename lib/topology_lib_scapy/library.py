@@ -223,9 +223,9 @@ def dot1q(enode, key_val=None):
     """
     if enode._shells['bash']._prompt != '>>> ':
         start_scapy(enode)
-        result = enode("DOT1Q().show()", shell='bash')
+        result = enode("Dot1Q().show()", shell='bash')
     else:
-        result = enode("DOT1Q().show()", shell='bash')
+        result = enode("Dot1Q().show()", shell='bash')
 
     return protocol(result, key_val)
 

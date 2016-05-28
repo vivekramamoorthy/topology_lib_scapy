@@ -30,6 +30,28 @@ from __future__ import unicode_literals, absolute_import
 from __future__ import print_function, division
 from .generator import createcdmline, protocol
 import re
+from time import ctime
+import threading
+
+
+class ScapyThread(threading.Thread):
+    def __init__(self, func, enode, topology, proto_str='', packet_list=[], name=''):
+        threading.Thread.__init__(self)
+        self.func = func
+        self.node = enode
+        self.packet_list = packet_list
+        self.name = name
+        self.proto_str = proto_str
+        self.args = (enode, proto_str, packet_list, topology) 
+        print("ScapyThread Init of", self.name)
+
+    def outresult(self):
+        return self.res
+
+    def run(self):
+        print('Starting', self.name, 'at:', ctime())
+        self.res = self.func(*self.args)
+        print('Starting', self.name, 'at:', ctime())
 
 
 def start_scapy(enode):
@@ -52,7 +74,7 @@ def start_scapy(enode):
         enode._shells['bash']._prompt = '>>> '
         enode("/usr/local/bin/scapy", shell='bash')
     else:
-        #enode._shells['bash']._backupprompt = enode._shells['bash']._prompt
+        # enode._shells['bash']._backupprompt = enode._shells['bash']._prompt
         enode('apt-get install python-scapy', shell='bash')
         enode._shells['bash']._prompt = '>>> '
         enode("/usr/bin/scapy", shell='bash')
@@ -350,6 +372,32 @@ def sniff(enode, options="timeout=5"):
     return show(enode)
 
 
+# Sniff packets - timeout is 8 seconds by default.
+def sniff2(enode, options="timeout=5"):
+    """
+    Sniff command for host node. By default a timeout of 5 seconds
+    has been set.
+    Always include a timeout value < 9 seconds when specifying other options.
+
+    : param type str
+        options: optional parameters for the command, eg: "timeout=5"
+
+    Usage:
+
+        ::
+
+            result =\
+                <node>.libs.scapy.sniff("prn=None, lfilter=None, count=0,\
+                 store=1, offline=None, L2socket=None,timeout=8")
+
+            result = <node>.libs.scapy.sniff()
+    """
+
+    scapycmd = "sniff(" + options + ")"
+    return enode(scapycmd, shell='bash')
+    # return show(enode)
+
+
 # Send and receive packets at layer 3
 def sr(enode, packet_struct, packet_list, options="timeout=5"):
     """
@@ -513,6 +561,7 @@ def get_prompt(enode):
 
 
 __all__ = [
+    'ScapyThread',
     'start_scapy',
     'exit_scapy',
     'send',
@@ -523,6 +572,7 @@ __all__ = [
     'srp',
     'srp1',
     'sniff',
+    'sniff2',
     'ip',
     'tcp',
     'ether',

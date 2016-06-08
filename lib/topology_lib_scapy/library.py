@@ -35,14 +35,15 @@ import threading
 
 
 class ScapyThread(threading.Thread):
-    def __init__(self, func, enode, topology, proto_str='', packet_list=[], name=''):
+    def __init__(self, func, enode, topology, proto_str='', packet_list=[],
+                 name=''):
         threading.Thread.__init__(self)
         self.func = func
         self.node = enode
         self.packet_list = packet_list
         self.name = name
         self.proto_str = proto_str
-        self.args = (enode, proto_str, packet_list, topology) 
+        self.args = (enode, proto_str, packet_list, topology)
         print("ScapyThread Init of", self.name)
 
     def outresult(self):
@@ -126,6 +127,31 @@ def ip(enode, key_val=None):
         result = enode("IP().show()", shell='bash')
     else:
         result = enode("IP().show()", shell='bash')
+
+    return protocol(result, key_val)
+
+
+def ipv6(enode, key_val=None):
+    """
+    This method returns a dictionary for IPv6 packet with keys. Initial
+    values are set to none and can be changed.
+
+    : param str key_val: fileds and values for IPv6 packet.
+
+    Usage:
+
+        ::
+
+            ipv6_packet = <host node>.libs.scapy.ipv6() or
+            ipv6_packet = <host node>.libs.scapy.ipv6("dst=put ipv6 address,\
+                                                    src=put ipv6 address")
+
+    """
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+        result = enode("IPv6().show()", shell='bash')
+    else:
+        result = enode("IPv6().show()", shell='bash')
 
     return protocol(result, key_val)
 

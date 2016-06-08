@@ -625,6 +625,7 @@ __all__ = [
     'sniff',
     'sniff2',
     'ip',
+    'ipv6',
     'tcp',
     'ether',
     'arp',

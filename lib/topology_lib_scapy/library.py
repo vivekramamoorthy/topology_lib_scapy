@@ -133,6 +133,31 @@ def ip(enode, key_val=None):
     return protocol(result, key_val)
 
 
+def ipv6(enode, key_val=None):
+    """
+    This method returns a dictionary for IPv6 packet with keys. Initial
+    values are set to none and can be changed.
+
+    : param str key_val: fileds and values for IPv6 packet.
+
+    Usage:
+
+        ::
+
+            ipv6_packet = <host node>.libs.scapy.ipv6() or
+            ipv6_packet = <host node>.libs.scapy.ipv6("dst=put ipv6 address,\
+                                                    src=put ipv6 address")
+
+    """
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+        result = enode("IPv6().show()", shell='bash')
+    else:
+        result = enode("IPv6().show()", shell='bash')
+
+    return protocol(result, key_val)
+
+
 def ether(enode, key_val=None):
     """
     This method returns a dictionary for Ether packet with keys. Initial

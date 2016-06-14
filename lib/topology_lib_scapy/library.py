@@ -35,26 +35,6 @@ import threading
 
 
 class ScapyThread(threading.Thread):
-    def __init__(self, func, enode, topology, proto_str='', packet_list=[], name=''):
-        threading.Thread.__init__(self)
-        self.func = func
-        self.node = enode
-        self.packet_list = packet_list
-        self.name = name
-        self.proto_str = proto_str
-        self.args = (enode, proto_str, packet_list, topology) 
-        print("ScapyThread Init of", self.name)
-
-    def outresult(self):
-        return self.res
-
-    def run(self):
-        print('Starting', self.name, 'at:', ctime())
-        self.res = self.func(*self.args)
-        print('Starting', self.name, 'at:', ctime())
-
-
-class ScapyMultiCountThread(threading.Thread):
     def __init__(self, func, enode, topology, proto_str='', packet_list=[], name='', count=0):
         threading.Thread.__init__(self)
         self.func = func

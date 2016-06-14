@@ -35,15 +35,17 @@ import threading
 
 
 class ScapyThread(threading.Thread):
-    def __init__(self, func, enode, topology, proto_str='', packet_list=[],
-                 name=''):
+    def __init__(
+            self, func, enode, topology,
+            proto_str='', packet_list=[], name='', count=0
+               ):
         threading.Thread.__init__(self)
         self.func = func
         self.node = enode
         self.packet_list = packet_list
         self.name = name
         self.proto_str = proto_str
-        self.args = (enode, proto_str, packet_list, topology)
+        self.args = (enode, proto_str, packet_list, topology, count)
         print("ScapyThread Init of", self.name)
 
     def outresult(self):
@@ -421,7 +423,30 @@ def sniff2(enode, options="timeout=5"):
 
     scapycmd = "sniff(" + options + ")"
     return enode(scapycmd, shell='bash')
-    # return show(enode)
+
+
+# Generic Send and/or Receive Scapy Library Function
+def srloop(enode, packet_struct, packet_list, options="timeout=5"):
+    """
+    Send and recieve multiple packets at layer 3
+    Returns a string of received packets. Parser is yet to be implemented.
+    By default, this returns a _.show() for the result.
+
+    : param type str
+        packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
+        options: optional parameters for the command, eg: "iface=1, count=1"
+        param list: list of packets to be sent. eg: [ether, ip, tcp]
+
+    Usage:
+
+        ::
+
+            result =\
+            <node>.libs.scapy.srloop('Eth/IP/TCP', [ether, ip, tcp]) or
+            <node>.libs.scapy.srloop('Eth/IP/TCP', [ether, ip, tcp], "iface=2")
+    """
+    scapycmd = "srloop(" + options + ")"
+    return enode(scapycmd, shell='bash')
 
 
 # Send and receive packets at layer 3

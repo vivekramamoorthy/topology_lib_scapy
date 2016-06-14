@@ -35,14 +35,17 @@ import threading
 
 
 class ScapyThread(threading.Thread):
-    def __init__(self, func, enode, topology, proto_str='', packet_list=[], name='', count=0):
+    def __init__(
+            self, func, enode, topology,
+            proto_str='', packet_list=[], name='', count=0
+               ):
         threading.Thread.__init__(self)
         self.func = func
         self.node = enode
         self.packet_list = packet_list
         self.name = name
         self.proto_str = proto_str
-        self.args = (enode, proto_str, packet_list, topology, count) 
+        self.args = (enode, proto_str, packet_list, topology, count)
         print("ScapyThread Init of", self.name)
 
     def outresult(self):
@@ -397,8 +400,8 @@ def sniff2(enode, options="timeout=5"):
     return enode(scapycmd, shell='bash')
 
 
-# Generic Send and/or Receive Scapy Library Function 
-def srloop(enode, packet_struct, packet_list, options="timeout=5"): 
+# Generic Send and/or Receive Scapy Library Function
+def srloop(enode, packet_struct, packet_list, options="timeout=5"):
     """
     Send and recieve multiple packets at layer 3
     Returns a string of received packets. Parser is yet to be implemented.

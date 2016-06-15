@@ -36,7 +36,7 @@ import threading
 class ScapyThread(threading.Thread):
     def __init__(
             self, func, enode, topology,
-            proto_str='', packet_list=[], addr='',
+            proto_str='', packet_list=[], filter_str='',
             count=0
                ):
         threading.Thread.__init__(self)
@@ -44,8 +44,8 @@ class ScapyThread(threading.Thread):
         self.node = enode
         self.packet_list = packet_list
         self.proto_str = proto_str
-        self.addr = addr
-        self.args = (enode, proto_str, packet_list, topology, addr, count)
+        self.filter_str = filter_str
+        self.args = (enode, proto_str, packet_list, topology, filter_str, count)
 
     def outresult(self):
         return self.res

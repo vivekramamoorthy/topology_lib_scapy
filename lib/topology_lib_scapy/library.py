@@ -37,7 +37,7 @@ class ScapyThread(threading.Thread):
     def __init__(
             self, func, enode, topology,
             proto_str='', packet_list=[], filter_str='',
-            count=0
+            count=0, port_str='', timeout_int=0
                ):
         threading.Thread.__init__(self)
         self.func = func
@@ -45,13 +45,49 @@ class ScapyThread(threading.Thread):
         self.packet_list = packet_list
         self.proto_str = proto_str
         self.filter_str = filter_str
-        self.args = (enode, proto_str, packet_list, topology, filter_str, count)
+        self.args = (
+                        enode, proto_str, packet_list,
+                        topology, filter_str, count,
+                        port_str, timeout_int
+                    )
 
     def outresult(self):
         return self.res
 
     def run(self):
         self.res = self.func(*self.args)
+
+
+def send_traffic(
+            enode, proto_str, list, topology, filter_str, cnt,
+            port_str, timeout_int
+                ):
+    node = topology.get(enode)
+    node.libs.scapy.send(proto_str, list, "count={}".format(cnt))
+    print('Send the packet')
+    return None
+
+
+def sniff_traffic(
+            enode, proto_str, list, topology, filter_str, cnt,
+            port_str, timeout_int
+                ):
+    node = topology.get(enode)
+    eth = node.ports[port_str]
+    iface_str = 'iface="' + eth + '", '
+    filter_format = 'filter="' + filter_str + '", '
+    count_str = "count={}".format(cnt) + ', '
+    prn_str = 'prn=lambda x: x.summary(), '
+    timeout_str = "timeout={}".format(timeout_int)
+
+    recdpacket = node.libs.scapy.sniff2(
+                    '{} {} {} {} {}'
+                    .format(
+                        iface_str, filter_format, count_str, prn_str,
+                        timeout_str
+                            )
+                                )
+    return recdpacket
 
 
 def start_scapy(enode):
@@ -611,6 +647,8 @@ def get_prompt(enode):
 
 __all__ = [
     'ScapyThread',
+    'send_traffic',
+    'sniff_traffic',
     'start_scapy',
     'exit_scapy',
     'send',

@@ -100,7 +100,8 @@ def exit_scapy(enode):
     if host_type == "topology_docker.nodes.host.HostNode":
         enode._shells['bash']._prompt = '@~~==::BASH_PROMPT::==~~@'
     else:
-        enode._shells['bash']._prompt = r'\r\n[^\r\n]+@.+[#$]'
+        enode._shells['bash']._prompt = r'@~~==::BASH_PROMPT::==~~@'
+        # enode._shells['bash']._prompt = r'\r\n[^\r\n]+@.+[#$]'
 
     enode("exit()", shell='bash')
 

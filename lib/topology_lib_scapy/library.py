@@ -111,7 +111,9 @@ def start_scapy(enode):
         enode("/usr/local/bin/scapy", shell='bash')
     else:
         # enode._shells['bash']._backupprompt = enode._shells['bash']._prompt
-        enode('apt-get install python-scapy', shell='bash')
+        _shell = enode.get_shell('bash')
+        _shell.send_command('apt-get install python-scapy', timeout=300)
+        # enode('apt-get install python-scapy', shell='bash')
         enode._shells['bash']._prompt = '>>> '
         enode("/usr/bin/scapy", shell='bash')
 

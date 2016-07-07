@@ -68,7 +68,7 @@ def send_traffic(
     return None
 
 
-def sniff_traffic(
+def sniff_traffic_bpf_filter(
             enode, proto_str, list, topology, filter_str, cnt,
             port_str, timeout_int
                 ):
@@ -76,6 +76,28 @@ def sniff_traffic(
     eth = node.ports[port_str]
     iface_str = 'iface="' + eth + '", '
     filter_format = 'filter="' + filter_str + '", '
+    count_str = "count={}".format(cnt) + ', '
+    prn_str = 'prn=lambda x: x.summary(), '
+    timeout_str = "timeout={}".format(timeout_int)
+
+    recdpacket = node.libs.scapy.sniff2(
+                    '{} {} {} {} {}'
+                    .format(
+                        iface_str, filter_format, count_str, prn_str,
+                        timeout_str
+                            )
+                                )
+    return recdpacket
+
+
+def sniff_traffic(
+            enode, proto_str, list, topology, filter_str, cnt,
+            port_str, timeout_int
+                ):
+    node = topology.get(enode)
+    eth = node.ports[port_str]
+    iface_str = 'iface="' + eth + '", '
+    filter_format = 'lfilter=' + filter_str + ', '
     count_str = "count={}".format(cnt) + ', '
     prn_str = 'prn=lambda x: x.summary(), '
     timeout_str = "timeout={}".format(timeout_int)

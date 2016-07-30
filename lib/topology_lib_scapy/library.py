@@ -133,11 +133,48 @@ def start_scapy(enode):
         enode("/usr/local/bin/scapy", shell='bash')
     else:
         # enode._shells['bash']._backupprompt = enode._shells['bash']._prompt
-        _shell = enode.get_shell('bash')
-        _shell.send_command('apt-get install python-scapy', timeout=300)
+        # _shell = enode.get_shell('bash')
+        # _shell.send_command('apt-get install python-scapy', timeout=300)
         # enode('apt-get install python-scapy', shell='bash')
+        
+        # Set timeout since using wget for download and build scapy-2.3.1
+        scapy_install_timeout = 300
+
+        # IGMP V3 fixed file to build
+        branch = "?h=feature/hpe-mcast-stack"
+        igmp_dir = "mcast_pkt_gen/igmp/"
+        igmp_py = "igmpv3.py"
+        fixed_igmp_file = (
+            "http://git-nos.rose.rdlabs.hpecorp.net/cgit/hpe/"
+            "hpe-multicast-rx-switchd-plugin/plain/{}{}{}"
+        ).format(igmp_dir, igmp_py, branch)
+        scapy_base_url = 'http://www.secdev.org/projects/scapy/files'
+        scapy_name = 'scapy-2.3.1'
+        scapy_install_name = 'scapy-2.3.1.zip'
+        scapy_full_url = '{0}/{1}'.format(scapy_base_url, scapy_install_name)
+        scapy_igmp_file = '{0}/scapy/contrib/{1}'.format(scapy_name, igmp_py)
+
+        _shell = enode.get_shell('bash')
+        _shell.send_command('which scapy')
+        output = _shell.get_response()
+        if 'scapy' not in output.strip():
+            print("### INSTALL - {0} ###".format(scapy_name))
+            cmds = []
+            cmds.append('wget {0}'.format(scapy_full_url))
+            cmds.append('unzip {0}'.format(scapy_install_name))
+            cmds.append('wget {0}'.format(fixed_igmp_file))
+            cmds.append('rm -rf {0}'.format(scapy_igmp_file))
+            cmds.append('cp {0}* {1}'.format(igmp_py, scapy_igmp_file))
+            cmds.append('cd {0}'.format(scapy_name))
+            cmds.append('python setup.py install')
+            cmds.append('cd ..')
+            for file in [scapy_name, igmp_py]: 
+                cmds.append('rm -rf {0}*'.format(file))
+            for cmd in cmds:
+                _shell.send_command(cmd, timeout=scapy_install_timeout)
+                _shell.get_response()
         enode._shells['bash']._prompt = '>>> '
-        enode("/usr/bin/scapy", shell='bash')
+        enode('/usr/local/bin/scapy', shell='bash')
 
 
 def exit_scapy(enode):
@@ -360,6 +397,54 @@ def udp(enode, key_val=None):
         result = enode("UDP().show()", shell='bash')
 
     return protocol(result, key_val)
+
+
+# Enable IGMP protocol
+def enable_igmp(enode, version):
+    """
+    Enable IGMP protocol
+
+    : param type str
+        version: version of IGMP protocol
+
+    Usage:
+
+        ::
+
+            result = <node>.libs.scapy.enable_igmp(version)
+    """
+    if int(version) > 2:
+        scapycmd = "load_contrib('igmpv3')"
+    else:
+        scapycmd = "load_contrib('igmp')"
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+    return enode(scapycmd, shell='bash')
+
+
+# Send packets at layer 2 with packet commands
+def send_packet_l2(enode, packet, options=None):
+    """
+    Send packets at layer 2
+
+    : param type str
+        packet: Defines how packets are layered with values
+        options: optional parameters for the command, eg: "iface=1, count=1"
+
+    Usage:
+
+        ::
+
+            result =\
+            <node>.libs.scapy.send_packet_l2(packet_cmds) or
+            <node>.libs.scapy.send_packet_l2(packet_cmds, "iface=2")
+    """
+    if options:
+        scapycmd = "sendp({packet},{options})".format(packet=packet,
+                                                      options=options)
+    else:
+        scapycmd = "sendp({packet})".format(packet=packet)
+    return enode(scapycmd, shell='bash')
 
 
 # Send packets at layer 3
@@ -693,5 +778,7 @@ __all__ = [
     'udp',
     'icmp',
     'show',
-    'summary'
+    'summary',
+    'send_packet_l2',
+    'enable_igmp'
 ]

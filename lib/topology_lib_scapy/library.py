@@ -33,6 +33,63 @@ import re
 import threading
 
 
+class ScapyApiTheard(threading.Thread):
+    """
+    This Class will create a thread and call all scapy library APIs directly
+    TODO:
+
+        Timeout happends when try to send the packets for longer interval.
+        Need to discuss with maintainers to handle the timeout properly.
+        This may require timeout param to be added explitcly for all functions
+        and the command should be sent with low level apis to handle the
+        timeout.
+    Usage:
+
+        ::
+
+            hs1.libs.scapy.start_scapy()
+            options = "iface='{}' ,count={}, inter={}".format(port1, 100, 0.2)
+            scapy_thread = ScapyApiTheard(
+                hs1, topology, hs1.libs.scapy.sendp,
+                args=('ETH/IP', [eth, ip_pkt]), kwargs={"options": options}
+            )
+            scapy_thread.start()
+            /*Do User defined operations if any*/
+            scapy_thread.join()
+            hs1.libs.scapy.exit_scapy()
+
+    """
+    def __init__(self, node, func, args=(), kwargs=None):
+        """
+        This method must be called while creating thread.
+        : param object node: Modular framework topology node.
+        : param func: Name of the function to be called.
+        : param tuple args: Mandatory arugument to be passed for that func.
+        : param dict kwargs: optional arugument to be passed for that func.
+
+        Usage:
+
+            ::
+
+                scapy_thread = ScapyApiTheard(
+                    hs1, topology, hs1.libs.scapy.sendp,
+                    args=('ETH/IP', [eth, ip_pkt]), kwargs={"options": options}
+                )
+
+        """
+        threading.Thread.__init__(self)
+        self.func = func
+        self.node = node
+        self.args = args
+        self.kwargs = kwargs
+
+    def outresult(self):
+        return self.res
+
+    def run(self):
+        self.res = self.func(*self.args, **self.kwargs)
+
+
 class ScapyThread(threading.Thread):
     def __init__(
             self, func, enode, topology,
@@ -136,7 +193,6 @@ def start_scapy(enode):
         # _shell = enode.get_shell('bash')
         # _shell.send_command('apt-get install python-scapy', timeout=300)
         # enode('apt-get install python-scapy', shell='bash')
-        
         # Set timeout since using wget for download and build scapy-2.3.1
         scapy_install_timeout = 300
 
@@ -168,7 +224,7 @@ def start_scapy(enode):
             cmds.append('cd {0}'.format(scapy_name))
             cmds.append('python setup.py install')
             cmds.append('cd ..')
-            for file in [scapy_name, igmp_py]: 
+            for file in [scapy_name, igmp_py]:
                 cmds.append('rm -rf {0}*'.format(file))
             for cmd in cmds:
                 _shell.send_command(cmd, timeout=scapy_install_timeout)
@@ -423,13 +479,14 @@ def enable_igmp(enode, version):
 
 
 # Send packets at layer 2 with packet commands
-def send_packet_l2(enode, packet, options=None):
+def send_packet_l2(enode, packet, options=None, timeout=30):
     """
     Send packets at layer 2
 
     : param type str
         packet: Defines how packets are layered with values
         options: optional parameters for the command, eg: "iface=1, count=1"
+        timeout: expect timeout period default 30 seconds
 
     Usage:
 
@@ -444,11 +501,15 @@ def send_packet_l2(enode, packet, options=None):
                                                       options=options)
     else:
         scapycmd = "sendp({packet})".format(packet=packet)
-    return enode(scapycmd, shell='bash')
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+    _shell = enode.get_shell('bash')
+    _shell.send_command(scapycmd, timeout=timeout)
+    return _shell.get_response()
 
 
 # Send packets at layer 3
-def send(enode, packet_struct, packet_list, options=None):
+def send(enode, packet_struct, packet_list, options=None, timeout=30):
     """
     send: Send packets at layer 3
 
@@ -456,6 +517,7 @@ def send(enode, packet_struct, packet_list, options=None):
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]
+        timeout: expect timeout period default 30 seconds
 
     Usage:
 
@@ -468,11 +530,15 @@ def send(enode, packet_struct, packet_list, options=None):
 
     packet = "send("
     scapycmd = createcdmline(packet, packet_struct, packet_list, options)
-    return enode(scapycmd, shell='bash')
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+    _shell = enode.get_shell('bash')
+    _shell.send_command(scapycmd, timeout=timeout)
+    return _shell.get_response()
 
 
 # Send packets at layer 2
-def sendp(enode, packet_struct, packet_list, options=None):
+def sendp(enode, packet_struct, packet_list, options=None, timeout=30):
     """
     Send packets at layer 2
 
@@ -480,6 +546,7 @@ def sendp(enode, packet_struct, packet_list, options=None):
         packet_struct: Defines how packets are layered.eg: 'Eth/IP/TCP'
         options: optional parameters for the command, eg: "iface=1, count=1"
         param list: list of packets to be sent. eg: [ether, ip, tcp]
+        timeout: expect timeout period default 30 seconds
 
     Usage:
 
@@ -491,7 +558,11 @@ def sendp(enode, packet_struct, packet_list, options=None):
     """
     packet = "sendp("
     scapycmd = createcdmline(packet, packet_struct, packet_list, options)
-    return enode(scapycmd, shell='bash')
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+    _shell = enode.get_shell('bash')
+    _shell.send_command(scapycmd, timeout=timeout)
+    return _shell.get_response()
 
 
 # Send packets at layer 2 using tcpreplay for performance

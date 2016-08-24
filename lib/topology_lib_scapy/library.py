@@ -33,7 +33,7 @@ import re
 import threading
 
 
-class ScapyApiTheard(threading.Thread):
+class ScapyApiThread(threading.Thread):
     """
     This Class will create a thread and call all scapy library APIs directly
     TODO:
@@ -49,8 +49,8 @@ class ScapyApiTheard(threading.Thread):
 
             hs1.libs.scapy.start_scapy()
             options = "iface='{}' ,count={}, inter={}".format(port1, 100, 0.2)
-            scapy_thread = ScapyApiTheard(
-                hs1, topology, hs1.libs.scapy.sendp,
+            scapy_thread = ScapyApiThread(
+                hs1.libs.scapy.sendp,
                 args=('ETH/IP', [eth, ip_pkt]), kwargs={"options": options}
             )
             scapy_thread.start()
@@ -59,10 +59,9 @@ class ScapyApiTheard(threading.Thread):
             hs1.libs.scapy.exit_scapy()
 
     """
-    def __init__(self, node, func, args=(), kwargs=None):
+    def __init__(self, func, args=(), kwargs=None):
         """
         This method must be called while creating thread.
-        : param object node: Modular framework topology node.
         : param func: Name of the function to be called.
         : param tuple args: Mandatory arugument to be passed for that func.
         : param dict kwargs: optional arugument to be passed for that func.
@@ -71,15 +70,14 @@ class ScapyApiTheard(threading.Thread):
 
             ::
 
-                scapy_thread = ScapyApiTheard(
-                    hs1, topology, hs1.libs.scapy.sendp,
+                scapy_thread = ScapyApiThread(
+                    hs1.libs.scapy.sendp,
                     args=('ETH/IP', [eth, ip_pkt]), kwargs={"options": options}
                 )
 
         """
         threading.Thread.__init__(self)
         self.func = func
-        self.node = node
         self.args = args
         self.kwargs = kwargs
 

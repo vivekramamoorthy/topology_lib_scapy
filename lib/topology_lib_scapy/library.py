@@ -404,6 +404,28 @@ def icmp(enode, key_val=None):
 
     return protocol(result, key_val)
 
+def icmpv6_req(enode, key_val=None):
+    """
+    This method returns a dictionary for ICMPv6 packet with keys. Initial
+    values are set to none and can be changed.
+
+    : param str key_val: fileds and values for packet.
+
+    Usage:
+
+        ::
+
+            icmp_packet = <host node>.libs.scapy.icmp() or
+            icmp_packet = <host node>.libs.scapy.icmp("<key>=<value>")
+
+    """
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+        result = enode("ICMPv6EchoRequest().show()", shell='bash')
+    else:
+        result = enode("ICMPv6EchoRequest().show()", shell='bash')
+
+    return protocol(result, key_val)
 
 def dot1q(enode, key_val=None):
     """

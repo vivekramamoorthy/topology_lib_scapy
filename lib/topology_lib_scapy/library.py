@@ -868,6 +868,7 @@ __all__ = [
     'dot1q',
     'udp',
     'icmp',
+    'icmpv6_req',
     'show',
     'summary',
     'send_packet_l2',

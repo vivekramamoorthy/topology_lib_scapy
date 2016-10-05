@@ -107,6 +107,7 @@ def createcdmline(packet, packet_struct, packet_list, options):
             packet = get_pkt_optns(r'\s*802.1Q\w*', packet, packet_list)
         # Match ICMPv6_Req packet
         elif re.match(r'\s*ICMPv6_REQ', pkt_type, re.IGNORECASE):
+            print('Vivek: matched ICMPv6_Req')
             packet = packet + "ICMPv6EchoRequest("
             packet = get_pkt_optns(r'\s*ICMPv6\s+Echo\s+Request\w*', packet, packet_list)            
 
@@ -124,6 +125,8 @@ def get_pkt_optns(proto_re, packet, packet_list):
     test_packet = packet[:]
     for protocol in packet_list:
         # For each protocol in list, match the prot type
+        print(protocol['prot'])
+        print(proto_re)
         if re.match(proto_re, protocol['prot'], re.IGNORECASE):
             for key, val in protocol.items():
                 # Create packet string from key, value pair.

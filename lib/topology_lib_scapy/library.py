@@ -498,7 +498,7 @@ def enable_igmp(enode, version):
     return enode(scapycmd, shell='bash')
 
 # Add IPv6 route 
-def add_ipv6_route(enode, dest, gw, iface=None):
+def add_ipv6_route(enode, dest, gw=None, iface=None):
     """
     Add v6 route to scapy
 
@@ -516,9 +516,9 @@ def add_ipv6_route(enode, dest, gw, iface=None):
             <node>.libs.scapy.add_ipv6_route("::/0, "1000:1", dev="eth0")
     """    
     if iface:
-        scapycmd = "conf.route6.add(dst='{dest}',gw='{gw},dev='{iface}')".format(dest=dest,
-                                                      gw=gw, iface=iface)
-    else:
+        scapycmd = "conf.route6.add(dst='{dest}', dev='{iface}')".format(dest=dest,
+                                                      iface=iface)
+    if gw:
         scapycmd = "conf.route6.add(dst='{dest}',gw='{gw})".format(dest=dest,
                                                       gw=gw)        
     if enode._shells['bash']._prompt != '>>> ':

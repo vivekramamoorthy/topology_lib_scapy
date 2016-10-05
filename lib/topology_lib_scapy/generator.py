@@ -97,6 +97,11 @@ def createcdmline(packet, packet_struct, packet_list, options):
         elif re.match(r'\s*udp', pkt_type, re.IGNORECASE):
             packet = packet + "UDP("
             packet = get_pkt_optns(r'\s*udp\w*', packet, packet_list)
+        # Match ICMPv6_Req packet
+        elif re.match(r'\s*ICMPv6_REQ', pkt_type, re.IGNORECASE):
+            print('Vivek: matched ICMPv6_Req')
+            packet = packet + "ICMPv6EchoRequest("
+            packet = get_pkt_optns(r'\s*ICMPv6\s+Echo\s+Request\w*', packet, packet_list)            
         # Match ICMP packet
         elif re.match(r'\s*icmp', pkt_type, re.IGNORECASE):
             packet = packet + "ICMP("
@@ -104,12 +109,7 @@ def createcdmline(packet, packet_struct, packet_list, options):
         # Match DOT1Q packet
         elif re.match(r'\s*dot1q', pkt_type, re.IGNORECASE):
             packet = packet + "Dot1Q("
-            packet = get_pkt_optns(r'\s*802.1Q\w*', packet, packet_list)
-        # Match ICMPv6_Req packet
-        elif re.match(r'\s*ICMPv6_REQ', pkt_type, re.IGNORECASE):
-            print('Vivek: matched ICMPv6_Req')
-            packet = packet + "ICMPv6EchoRequest("
-            packet = get_pkt_optns(r'\s*ICMPv6\s+Echo\s+Request\w*', packet, packet_list)            
+            packet = get_pkt_optns(r'\s*802.1Q\w*', packet, packet_list)            
 
     # If options are provided, include them.
     if options is None:

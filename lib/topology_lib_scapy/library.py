@@ -497,6 +497,35 @@ def enable_igmp(enode, version):
         start_scapy(enode)
     return enode(scapycmd, shell='bash')
 
+# Add IPv6 route 
+def add_ipv6_route(enode, dest, gw, iface=None):
+    """
+    Add v6 route to scapy
+
+    : param type str
+        dest: Destination network
+        gw: Next hop
+        dev: Interface to reach next hop
+
+    Usage:
+
+        ::
+
+            result =\
+            <node>.libs.scapy.add_ipv6_route("::/0, "1000:1") or
+            <node>.libs.scapy.add_ipv6_route("::/0, "1000:1", dev="eth0")
+    """    
+    if iface:
+        scapycmd = "conf.route6.add(dst='{dest}',gw='{gw},dev='{iface}')".format(dest=dest,
+                                                      gw=gw, iface=iface)
+    else:
+        scapycmd = "conf.route6.add(dst='{dest}',gw='{gw})".format(dest=dest,
+                                                      gw=gw)        
+    if enode._shells['bash']._prompt != '>>> ':
+        start_scapy(enode)
+    _shell = enode.get_shell('bash')
+    _shell.send_command(scapycmd, timeout=timeout)
+    return _shell.get_response()
 
 # Send packets at layer 2 with packet commands
 def send_packet_l2(enode, packet, options=None, timeout=30):
@@ -869,6 +898,7 @@ __all__ = [
     'udp',
     'icmp',
     'icmpv6_req',
+    'add_ipv6_route',
     'show',
     'summary',
     'send_packet_l2',

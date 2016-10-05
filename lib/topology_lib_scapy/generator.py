@@ -105,6 +105,10 @@ def createcdmline(packet, packet_struct, packet_list, options):
         elif re.match(r'\s*dot1q', pkt_type, re.IGNORECASE):
             packet = packet + "Dot1Q("
             packet = get_pkt_optns(r'\s*802.1Q\w*', packet, packet_list)
+        # Match ICMPv6_Req packet
+        elif re.match(r'\s*icmpv6_req', pkt_type, re.IGNORECASE):
+            packet = packet + "ICMPv6EchoRequest("
+            packet = get_pkt_optns(r'\s*icmp\w*', packet, packet_list)            
 
     # If options are provided, include them.
     if options is None:
